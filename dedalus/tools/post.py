@@ -293,7 +293,7 @@ def merge_setup(joint_file, proc_paths, virtual=False):
                         scalename = 'constant'
                     else:
                         hashval = hashlib.sha1(np.array(proc_dset.dims[i][0])).hexdigest()
-                        scalename = proc_dim.label + 'hash_' + hashval
+                        scalename = proc_dim.label + 'hash_' + hashval   # fixes an "Unable to open object" error that happens with the hashval
                         if not virtual and scalename in needed_hashes:
                             if joint_shape[i] == 1:
                                 scale_data = np.zeros(1)
