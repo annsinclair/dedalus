@@ -157,7 +157,7 @@ def merge_virtual_file(virtual_file_path, cleanup=False):
 
     # Cleanup after completed merge, if directed
     if cleanup:
-        folder = merged_file_path.parent.joinpath("{}/".format(virtual_file_path.stem))
+        folder = merged_file_path.parent.joinpath("{}/".format(merged_file_path.stem))  # seemed to need str as input
         logger.info("cleaning up {}".format(folder))
         if os.path.isdir(folder):
             shutil.rmtree(folder)
@@ -276,7 +276,7 @@ def merge_setup(joint_file, proc_paths, virtual=False):
                                                     dtype=proc_dset.dtype,
                                                     chunks=True)
             # Dataset metadata
-            joint_dset.attrs['task_number'] = proc_dset.attrs['task_number']
+#            joint_dset.attrs['task_number'] = proc_dset.attrs['task_number']   # as far as I can tell, files no longer have a 'task_number' attribute
             joint_dset.attrs['constant'] = proc_dset.attrs['constant']
             joint_dset.attrs['grid_space'] = proc_dset.attrs['grid_space']
             joint_dset.attrs['scales'] = proc_dset.attrs['scales']
@@ -286,7 +286,7 @@ def merge_setup(joint_file, proc_paths, virtual=False):
                 if joint_dset.dims[i].label == 't':
                     for scalename in ['sim_time', 'wall_time', 'timestep', 'iteration', 'write_number']:
                         scale = joint_file['scales'][scalename]
-                        joint_dset.dims.create_scale(scale, scalename)
+                        scale.make_scale(scalename)             # create_scale has been deprecated, following https://docs.h5py.org/en/stable/high/dataset.html#h5py.Dataset.make_scale
                         joint_dset.dims[i].attach_scale(scale)
                 else:
                     if proc_dim.label == 'constant' or proc_dim.label == '':
@@ -311,7 +311,7 @@ def merge_setup(joint_file, proc_paths, virtual=False):
                             needed_hashes.remove(scalename)
 
                     scale = joint_file['scales'][scalename]
-                    joint_dset.dims.create_scale(scale, scalename)
+                    scale.make_scale(scalename)   # create_scale has been deprecated, following https://docs.h5py.org/en/stable/high/dataset.html#h5py.Dataset.make_scale
                     joint_dset.dims[i].attach_scale(scale)
 
 def merge_data(joint_file, proc_path):
